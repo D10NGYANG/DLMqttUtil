@@ -4,7 +4,6 @@ import android.content.Context
 import com.d10ng.mqtt.bean.MqttClientOptions
 import com.d10ng.mqtt.constant.MqttConnectStatus
 import com.d10ng.mqtt.util.LogUtil
-import com.d10ng.mqtt.util.NetUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -23,9 +22,7 @@ import org.eclipse.paho.client.mqttv3.IMqttToken
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import java.lang.ref.WeakReference
-import java.util.Timer
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.concurrent.schedule
 import kotlin.time.Duration.Companion.seconds
 
 internal class MqttWorker : IMqtt {
@@ -46,9 +43,6 @@ internal class MqttWorker : IMqtt {
     /** 上下文 */
     private var weakContext: WeakReference<Context> = WeakReference(null)
 
-    /** 上一次执行重连的时间戳 */
-    private var lastReconnectTime: Long = 0
-
     /** 发布消息自增ID */
     private val publishMessageIdAtomic = AtomicInteger(0)
 
@@ -59,21 +53,6 @@ internal class MqttWorker : IMqtt {
     private val publishMessageResultIdFlow = MutableSharedFlow<Int>(extraBufferCapacity = 100)
 
     init {
-        // 启动连接状态检查任务
-        Timer().schedule(1000, 1000) {
-            if (mOptions == null || mOptions!!.autoReconnectInterval < 1) return@schedule
-            // 如果上一次重连时间距离现在超过了重连间隔时间，则执行重连
-            if ((System.currentTimeMillis() - lastReconnectTime) > mOptions!!.autoReconnectInterval * 1000) {
-                lastReconnectTime = System.currentTimeMillis()
-                doConnect()
-            }
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            // 监听网络状态改变，如果网络可用则执行连接
-            NetUtil.netStatusFlow.collect { hasNet ->
-                if (hasNet) doConnect()
-            }
-        }
         CoroutineScope(Dispatchers.IO).launch {
             // 监听连接状态，如果连接成功则执行订阅主题
             MqttManager.getConnectStatusFlow().collect { status ->
@@ -87,11 +66,7 @@ internal class MqttWorker : IMqtt {
     override fun connect(context: Context, options: MqttClientOptions) {
         weakContext = WeakReference(context)
         mOptions = options
-        // 启动连接任务
-        lastReconnectTime = System.currentTimeMillis()
         doConnect()
-        // 启动网络状态检查
-        NetUtil.startNetStatusListener(context)
     }
 
     override fun disconnect() {
@@ -166,8 +141,6 @@ internal class MqttWorker : IMqtt {
         val context = weakContext.get() ?: return
         // 如果配置不存在则不连接
         val options = mOptions ?: return
-        // 如果网络不可用则不连接
-        if (!NetUtil.isNetworkAvailable()) return
         // 更改MQTT状态
         MqttManager.changeConnectStatus(MqttConnectStatus.CONNECTING)
         // 断开旧连接
@@ -197,7 +170,8 @@ internal class MqttWorker : IMqtt {
         override fun connectionLost(cause: Throwable?) {
             // 连接丢失
             LogUtil.e("MQTT connection lost, $cause")
-            MqttManager.changeConnectStatus(MqttConnectStatus.DISCONNECTED)
+            // 自动重连，修改状态为连接中
+            MqttManager.changeConnectStatus(MqttConnectStatus.CONNECTING)
         }
 
         override fun messageArrived(topic: String?, message: MqttMessage?) {
@@ -235,7 +209,7 @@ internal class MqttWorker : IMqtt {
         override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
             // 连接失败
             LogUtil.e("MQTT connect failed, $exception")
-            MqttManager.changeConnectStatus(MqttConnectStatus.DISCONNECTED)
+            MqttManager.changeConnectStatus(MqttConnectStatus.CONNECTING)
         }
     }
 

@@ -45,6 +45,6 @@ data class MqttClientOptions(
         this.isCleanSession = this@MqttClientOptions.isCleanSession
         this.connectionTimeout = this@MqttClientOptions.connectionTimeout
         this.keepAliveInterval = this@MqttClientOptions.keepAliveInterval
-        this.isAutomaticReconnect = false
+        this.isAutomaticReconnect = true
     }
 }

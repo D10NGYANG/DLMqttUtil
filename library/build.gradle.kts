@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
     // MQTT
     api("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
     api("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")

@@ -62,14 +62,16 @@ dependencies {
     val composeBom = platform(compose_ver)
     implementation(composeBom)
     androidTestImplementation(composeBom)
-    // Material Design 2
-    implementation("androidx.compose.material:material")
+    // Material Design 3
+    implementation("androidx.compose.material3:material3")
     // Android Studio Preview support
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
     // UI Tests
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // Integration with activities
+    implementation("androidx.activity:activity-compose:1.7.2")
 
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$jetpack_lifecycle_ver")

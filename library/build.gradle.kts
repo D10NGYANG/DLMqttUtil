@@ -33,6 +33,10 @@ android {
 }
 
 dependencies {
-
+    // android
     implementation("androidx.core:core-ktx:1.10.1")
+
+    // MQTT
+    api("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
+    api("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
 }

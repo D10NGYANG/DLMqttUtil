@@ -39,4 +39,8 @@ dependencies {
     // MQTT
     api("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
     api("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_ver")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_ver")
 }

@@ -14,6 +14,6 @@ class App: Application() {
         super.onCreate()
         instant = this
         // 开启调试模式
-        MqttManager.setDebug(true)
+        MqttManager.setDebug()
     }
 }

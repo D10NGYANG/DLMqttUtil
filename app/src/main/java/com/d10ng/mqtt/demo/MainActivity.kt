@@ -34,7 +34,9 @@ class MainActivity : ComponentActivity() {
             DLMqttUtilTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize().padding(8.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MainView()
@@ -69,7 +71,7 @@ private fun MainView(
         TextField(
             value = host,
             onValueChange = { model.hostFlow.value = it },
-            label = { Text(text = "主机地址") }
+            label = { Text(text = "MQTT服务器地址") }
         )
         Row {
             Button(onClick = {
@@ -92,6 +94,9 @@ private fun MainView(
             }
         }
         LazyColumn {
+            item {
+                Text(text = "订阅消息列表")
+            }
             items(messageList) {
                 Text(text = "${it.topic}: ${it.message}")
             }

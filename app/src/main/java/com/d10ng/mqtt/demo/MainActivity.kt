@@ -52,6 +52,7 @@ private fun MainView(
     val password by model.passwordFlow.collectAsState()
     val host by model.hostFlow.collectAsState()
     val connectStatus by model.connectStatusFlow.collectAsState()
+    val isStartConnect by model.isStartConnectFlow.collectAsState()
     val messageList by model.messageListFlow.collectAsState()
     Column {
         Text(text = "连接状态：$connectStatus")
@@ -72,13 +73,13 @@ private fun MainView(
         )
         Row {
             Button(onClick = {
-                if (connectStatus == MqttConnectStatus.CONNECTED) {
+                if (isStartConnect) {
                     model.onClickDisconnect()
                 } else {
                     model.onClickConnect()
                 }
             }) {
-                Text(text = if (connectStatus == MqttConnectStatus.CONNECTED) "断开连接" else "连接")
+                Text(text = if (isStartConnect) "断开连接" else "连接")
             }
             Spacer(modifier = Modifier.width(32.dp))
             Button(

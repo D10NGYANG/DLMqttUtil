@@ -24,6 +24,8 @@ class MainViewModel: ViewModel() {
     val connectStatusFlow = MqttManager.getConnectStatusFlow()
     // 订阅消息列表
     val messageListFlow = MutableStateFlow(listOf<MqttMessage>())
+    // 是否启动连接
+    val isStartConnectFlow = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
@@ -52,6 +54,7 @@ class MainViewModel: ViewModel() {
                 )
             )
         )
+        isStartConnectFlow.value = true
     }
 
     /**
@@ -59,6 +62,7 @@ class MainViewModel: ViewModel() {
      */
     fun onClickDisconnect() {
         MqttManager.disconnect()
+        isStartConnectFlow.value = false
     }
 
     /**

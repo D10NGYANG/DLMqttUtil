@@ -81,11 +81,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_ver")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_ver")
 
-    // Compose 拓展
-    implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanist_ver")
+    implementation(project(":library"))
 
     // APP通用工具
     implementation("com.github.D10NGYANG:DLAppUtil:2.3.4")
     // APP通用工具
     implementation("com.github.D10NGYANG:DLCommonUtil:0.0.2")
+    // 日期时间工具
+    implementation("com.github.D10NGYANG:DLDateUtil:1.8.5")
+
+    // 内存泄漏检查
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
 }

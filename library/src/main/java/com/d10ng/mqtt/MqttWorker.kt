@@ -4,6 +4,7 @@ import android.content.Context
 import com.d10ng.mqtt.bean.MqttClientOptions
 import com.d10ng.mqtt.constant.MqttConnectStatus
 import com.d10ng.mqtt.util.LogUtil
+import com.d10ng.mqtt.util.NetUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -62,9 +63,15 @@ internal class MqttWorker : IMqtt {
         Timer().schedule(1000, 1000) {
             if (mOptions == null || mOptions!!.autoReconnectInterval < 1) return@schedule
             // 如果上一次重连时间距离现在超过了重连间隔时间，则执行重连
-            if (System.currentTimeMillis() - lastReconnectTime > mOptions!!.autoReconnectInterval * 1000) {
+            if ((System.currentTimeMillis() - lastReconnectTime) > mOptions!!.autoReconnectInterval * 1000) {
                 lastReconnectTime = System.currentTimeMillis()
                 doConnect()
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            // 监听网络状态改变，如果网络可用则执行连接
+            NetUtil.netStatusFlow.collect { hasNet ->
+                if (hasNet) doConnect()
             }
         }
         CoroutineScope(Dispatchers.IO).launch {
@@ -78,14 +85,13 @@ internal class MqttWorker : IMqtt {
     }
 
     override fun connect(context: Context, options: MqttClientOptions) {
-        // 断开旧连接
-        disconnect()
-        // 创建新连接，判断是否设置clientId，如果没有设置则随机生成一个
-        options.clientId += "_${System.currentTimeMillis()}_${(0..100).random()}"
         weakContext = WeakReference(context)
         mOptions = options
         // 启动连接任务
+        lastReconnectTime = System.currentTimeMillis()
         doConnect()
+        // 启动网络状态检查
+        NetUtil.startNetStatusListener(context)
     }
 
     override fun disconnect() {
@@ -160,18 +166,28 @@ internal class MqttWorker : IMqtt {
         val context = weakContext.get() ?: return
         // 如果配置不存在则不连接
         val options = mOptions ?: return
+        // 如果网络不可用则不连接
+        if (!NetUtil.isNetworkAvailable()) return
         // 更改MQTT状态
         MqttManager.changeConnectStatus(MqttConnectStatus.CONNECTING)
-        // 创建MQTT客户端
-        mClient = MqttAndroidClient(context, options.host, options.clientId).apply {
-            // 设置MQTT连接配置
-            val connectOptions = options.toMqttConnectOptions()
-            // 设置回调信息监听
-            setCallback(mCallBack)
-            // 建立连接
-            connect(connectOptions, null, mConnectListener)
+        // 断开旧连接
+        disconnect()
+        LogUtil.i("MQTT start connect, options=$options")
+        mOptions = options
+        val clientId = "${options.clientId}_${System.currentTimeMillis()}_${(0..100).random()}"
+        try {
+            // 创建MQTT客户端
+            mClient = MqttAndroidClient(context, options.host, clientId).apply {
+                // 设置MQTT连接配置
+                val connectOptions = options.toMqttConnectOptions()
+                // 设置回调信息监听
+                setCallback(mCallBack)
+                // 建立连接
+                connect(connectOptions, null, mConnectListener)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-
     }
 
     /**

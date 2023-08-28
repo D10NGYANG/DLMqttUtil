@@ -100,7 +100,7 @@ internal class MqttWorker : IMqtt {
             // 如果客户端不存在或者已断开连接，则不再执行推送
             if (mClient == null || !mClient!!.isConnected) {
                 LogUtil.e("MQTT push message failed, client is null or disconnected!")
-                false
+                return@withContext false
             }
             // 创建新的消息ID
             val messageId = publishMessageIdAtomic.incrementAndGet()

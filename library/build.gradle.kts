@@ -5,14 +5,14 @@ plugins {
 }
 
 group = "com.github.D10NGYANG"
-version = "0.0.3"
+version = "0.0.4"
 
 android {
     namespace = "com.d10ng.mqtt"
-    compileSdk = Project.compile_sdk
+    compileSdk = android_compile_sdk
 
     defaultConfig {
-        minSdk = Project.min_sdk
+        minSdk = android_min_sdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")

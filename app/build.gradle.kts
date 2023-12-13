@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.d10ng.mqtt.demo"
-    compileSdk = Project.compile_sdk
+    compileSdk = android_compile_sdk
 
     defaultConfig {
         applicationId = "com.d10ng.mqtt.demo"
-        minSdk = Project.min_sdk
-        targetSdk = Project.target_sdk
+        minSdk = android_min_sdk
+        targetSdk = android_target_sdk
         versionCode = 1
         versionName = "1.0"
 
@@ -51,7 +51,7 @@ android {
 
 dependencies {
     // Android
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
 
     // 单元测试（可选）
     testImplementation("junit:junit:4.13.2")
@@ -71,7 +71,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     // Integration with activities
-    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.activity:activity-compose:1.8.1")
 
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$jetpack_lifecycle_ver")
@@ -84,7 +84,7 @@ dependencies {
     implementation(project(":library"))
 
     // 日期时间工具
-    implementation("com.github.D10NGYANG:DLDateUtil:1.8.5")
+    implementation("com.github.D10NGYANG:DLDateUtil:1.9.0")
 
     // 内存泄漏检查
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")

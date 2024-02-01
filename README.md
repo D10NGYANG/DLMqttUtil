@@ -2,7 +2,7 @@
 
 android MQTT client，基于[paho.mqtt.android](https://github.com/eclipse/paho.mqtt.android)进行封装开发；
 
-*最新版本`0.0.4`*
+*最新版本`0.0.5`*
 
 # 特性
 - [x] 以Flow形式去接收订阅消息

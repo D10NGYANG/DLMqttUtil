@@ -71,7 +71,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     // Integration with activities
-    implementation("androidx.activity:activity-compose:1.8.1")
+    implementation("androidx.activity:activity-compose:1.8.2")
 
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$jetpack_lifecycle_ver")
@@ -84,8 +84,8 @@ dependencies {
     implementation(project(":library"))
 
     // 日期时间工具
-    implementation("com.github.D10NGYANG:DLDateUtil:1.9.0")
+    implementation("com.github.D10NGYANG:DLDateUtil:1.9.1")
 
     // 内存泄漏检查
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
 }

@@ -93,6 +93,13 @@ internal class MqttWorker : IMqtt {
         MqttManager.changeConnectStatus(MqttConnectStatus.DISCONNECTED)
     }
 
+    override fun subscribe(topic: MqttClientOptions.Topic) {
+        mOptions?.apply {
+            topics = topics.plus(topic)
+        }
+        mClient?.subscribeTopic()
+    }
+
     @OptIn(FlowPreview::class)
     override suspend fun publish(topic: String, message: String): Boolean =
         withContext(Dispatchers.IO) {

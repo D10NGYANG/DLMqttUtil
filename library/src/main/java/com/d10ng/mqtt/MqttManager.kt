@@ -86,6 +86,14 @@ object MqttManager: IMqtt {
     }
 
     /**
+     * 订阅主题
+     * @param topic MqttClientOptions.Topic
+     */
+    override fun subscribe(topic: MqttClientOptions.Topic) {
+        MqttWorker.instance.subscribe(topic)
+    }
+
+    /**
      * 发送消息
      * @param topic String
      * @param message String

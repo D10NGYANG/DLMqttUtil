@@ -84,7 +84,7 @@ dependencies {
     implementation(project(":library"))
 
     // 日期时间工具
-    implementation("com.github.D10NGYANG:DLDateUtil:1.9.1")
+    implementation("com.github.D10NGYANG:DLDateUtil:1.9.2")
 
     // 内存泄漏检查
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")

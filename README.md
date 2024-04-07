@@ -2,7 +2,7 @@
 
 android MQTT client，基于[paho.mqtt.android](https://github.com/eclipse/paho.mqtt.android)进行封装开发；
 
-*最新版本`0.0.5`*
+*最新版本`0.0.6`*
 
 # 特性
 - [x] 以Flow形式去接收订阅消息
@@ -107,14 +107,19 @@ MqttManager.disconnect()
 val isSuccess = MqttManager.publish("topic0", "Hello World! ${curTime.toDateStr()}")
 ```
 
-4 接收订阅消息
+4 添加订阅
+```kotlin
+MqttManager.subscribe(MqttClientOptions.Topic("topic0", MqttClientOptions.Topic.Qos.QOS_0))
+```
+
+5 接收订阅消息
 ```kotlin
 MqttManager.getMessageFlow().collect {
     Log.d("MqttManager", "收到消息：${it.topic} -> ${it.message}")
 }
 ```
 
-5 连接状态
+6 连接状态
 ```kotlin
 // 监听连接状态
 MqttManager.getConnectStatusFlow().collect {
@@ -127,7 +132,7 @@ MqttManager.getConnectStatusFlow().collect {
 val status = MqttManager.getCurrentConnectStatus()
 ```
 
-6 设置日志输出
+7 设置日志输出
 ```kotlin
 MqttManager.setDebug()
 ```

@@ -18,6 +18,12 @@ interface IMqtt {
     fun disconnect()
 
     /**
+     * 订阅主题
+     * @param topic MqttClientOptions.Topic
+     */
+    fun subscribe(topic: MqttClientOptions.Topic)
+
+    /**
      * 发送消息
      * @param topic String
      * @param message String

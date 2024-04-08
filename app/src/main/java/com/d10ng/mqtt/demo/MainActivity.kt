@@ -55,6 +55,7 @@ private fun MainView(
     val host by model.hostFlow.collectAsState()
     val connectStatus by model.connectStatusFlow.collectAsState()
     val isStartConnect by model.isStartConnectFlow.collectAsState()
+    val topics by model.topicsFlow.collectAsState()
     val messageList by model.messageListFlow.collectAsState()
     Column {
         Text(text = "连接状态：$connectStatus")
@@ -91,6 +92,30 @@ private fun MainView(
                 }
             ) {
                 Text(text = "发布消息")
+            }
+        }
+        TextField(
+            value = topics,
+            onValueChange = { model.topicsFlow.value = it },
+            label = { Text(text = "订阅主题，多主题以[;]符号进行分割") }
+        )
+        Row {
+            Button(
+                enabled = connectStatus == MqttConnectStatus.CONNECTED,
+                onClick = {
+                    model.onClickSubscribe()
+                }
+            ) {
+                Text(text = "订阅主题")
+            }
+            Spacer(modifier = Modifier.width(32.dp))
+            Button(
+                enabled = connectStatus == MqttConnectStatus.CONNECTED,
+                onClick = {
+                    model.onClickUnsubscribe()
+                }
+            ) {
+                Text(text = "取消订阅")
             }
         }
         LazyColumn {

@@ -24,6 +24,12 @@ interface IMqtt {
     fun subscribe(topic: MqttClientOptions.Topic)
 
     /**
+     * 取消订阅
+     * @param topic String
+     */
+    fun unsubscribe(topic: String)
+
+    /**
      * 发送消息
      * @param topic String
      * @param message String

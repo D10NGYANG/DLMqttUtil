@@ -15,9 +15,9 @@ import kotlinx.coroutines.launch
 class MainViewModel: ViewModel() {
 
     // 输入账号
-    val usernameFlow = MutableStateFlow("test1")
+    val usernameFlow = MutableStateFlow("mqtt-client")
     // 输入密码
-    val passwordFlow = MutableStateFlow("123456")
+    val passwordFlow = MutableStateFlow("1qaz2wsx")
     // 输入主机地址
     val hostFlow = MutableStateFlow("tcp://192.168.200.6:1883")
     // Mqtt连接状态
@@ -26,6 +26,8 @@ class MainViewModel: ViewModel() {
     val messageListFlow = MutableStateFlow(listOf<MqttMessage>())
     // 是否启动连接
     val isStartConnectFlow = MutableStateFlow(false)
+    // 订阅主题
+    val topicsFlow = MutableStateFlow("tocard/#")
 
     init {
         viewModelScope.launch {
@@ -48,10 +50,7 @@ class MainViewModel: ViewModel() {
                 username = usernameFlow.value,
                 password = passwordFlow.value,
                 host = hostFlow.value,
-                topics = listOf(
-                    MqttClientOptions.Topic("topic0", MqttClientOptions.Topic.Qos.QOS_0),
-                    MqttClientOptions.Topic("topic1", MqttClientOptions.Topic.Qos.QOS_0),
-                )
+                topics = listOf()
             )
         )
         isStartConnectFlow.value = true
@@ -63,6 +62,24 @@ class MainViewModel: ViewModel() {
     fun onClickDisconnect() {
         MqttManager.disconnect()
         isStartConnectFlow.value = false
+    }
+
+    /**
+     * 点击订阅主题
+     */
+    fun onClickSubscribe() {
+        topicsFlow.value.split(";").forEach {
+            MqttManager.subscribe(MqttClientOptions.Topic(it, MqttClientOptions.Topic.Qos.QOS_0))
+        }
+    }
+
+    /**
+     * 点击取消订阅
+     */
+    fun onClickUnsubscribe() {
+        topicsFlow.value.split(";").forEach {
+            MqttManager.unsubscribe(it)
+        }
     }
 
     /**

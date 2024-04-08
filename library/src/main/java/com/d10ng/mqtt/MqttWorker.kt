@@ -100,6 +100,13 @@ internal class MqttWorker : IMqtt {
         mClient?.subscribeTopic()
     }
 
+    override fun unsubscribe(topic: String) {
+        mOptions?.apply {
+            topics = topics.filter { it.topic != topic }
+        }
+        mClient?.unsubscribe(topic)
+    }
+
     @OptIn(FlowPreview::class)
     override suspend fun publish(topic: String, message: String): Boolean =
         withContext(Dispatchers.IO) {

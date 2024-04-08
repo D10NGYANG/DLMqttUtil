@@ -94,6 +94,14 @@ object MqttManager: IMqtt {
     }
 
     /**
+     * 取消订阅
+     * @param topic String
+     */
+    override fun unsubscribe(topic: String) {
+        MqttWorker.instance.unsubscribe(topic)
+    }
+
+    /**
      * 发送消息
      * @param topic String
      * @param message String

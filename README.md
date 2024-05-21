@@ -2,7 +2,7 @@
 
 android MQTT client，基于[paho.mqtt.android](https://github.com/eclipse/paho.mqtt.android)进行封装开发；
 
-*最新版本`0.0.7`*
+*最新版本`0.0.8`*
 
 # 特性
 - [x] 以Flow形式去接收订阅消息
@@ -25,8 +25,10 @@ allprojects {
 dependencies {
     implementation 'com.github.D10NGYANG:DLMqttUtil:$ver'
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
+    // 通用工具
+    implementation("com.github.D10NGYANG:DLCommonUtil:0.1.2")
 }
 ```
 

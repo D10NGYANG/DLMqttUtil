@@ -4,7 +4,7 @@ import android.content.Context
 import com.d10ng.mqtt.bean.MqttClientOptions
 import com.d10ng.mqtt.bean.MqttMessage
 import com.d10ng.mqtt.constant.MqttConnectStatus
-import com.d10ng.mqtt.util.LogUtil
+import com.d10ng.mqtt.util.LogM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,7 +30,7 @@ object MqttManager: IMqtt {
      * @param b Boolean
      */
     fun setDebug(b: Boolean = true) {
-        LogUtil.init(b)
+        LogM.debug = b
     }
 
     /**

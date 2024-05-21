@@ -3,7 +3,7 @@ package com.d10ng.mqtt
 import android.content.Context
 import com.d10ng.mqtt.bean.MqttClientOptions
 import com.d10ng.mqtt.constant.MqttConnectStatus
-import com.d10ng.mqtt.util.LogUtil
+import com.d10ng.mqtt.util.LogM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -70,6 +70,7 @@ internal class MqttWorker : IMqtt {
     }
 
     override fun disconnect() {
+        LogM.d("MQTT disconnect")
         try {
             mClient?.apply {
                 if (isConnected) disconnect()
@@ -110,10 +111,10 @@ internal class MqttWorker : IMqtt {
     @OptIn(FlowPreview::class)
     override suspend fun publish(topic: String, message: String): Boolean =
         withContext(Dispatchers.IO) {
-            LogUtil.d("MQTT push message prepare, topic=$topic, message=$message")
+            LogM.d("MQTT push message prepare, topic=$topic, message=$message")
             // 如果客户端不存在或者已断开连接，则不再执行推送
             if (mClient == null || !mClient!!.isConnected) {
-                LogUtil.e("MQTT push message failed, client is null or disconnected!")
+                LogM.e("MQTT push message failed, client is null or disconnected!")
                 return@withContext false
             }
             // 创建新的消息ID
@@ -129,7 +130,7 @@ internal class MqttWorker : IMqtt {
                         .timeout(5.seconds).first()
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    LogUtil.e("MQTT push message failed, timeout, $e!")
+                    LogM.e("MQTT push message failed, timeout, $e!")
                     null
                 }
             }
@@ -140,7 +141,7 @@ internal class MqttWorker : IMqtt {
             } catch (e: Exception) {
                 e.printStackTrace()
                 waitJob.cancel()
-                LogUtil.e("MQTT push message failed, $e!")
+                LogM.e("MQTT push message failed, $e!")
                 false
             }
         }
@@ -159,7 +160,7 @@ internal class MqttWorker : IMqtt {
         MqttManager.changeConnectStatus(MqttConnectStatus.CONNECTING)
         // 断开旧连接
         disconnect()
-        LogUtil.i("MQTT start connect, options=$options")
+        LogM.i("MQTT start connect, options=$options")
         mOptions = options
         val clientId = "${options.clientId}_${System.currentTimeMillis()}_${(0..100).random()}"
         try {
@@ -174,6 +175,7 @@ internal class MqttWorker : IMqtt {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            LogM.e("MQTT try create client failed, $e")
         }
     }
 
@@ -183,7 +185,7 @@ internal class MqttWorker : IMqtt {
     private val mCallBack = object : MqttCallbackExtended {
         override fun connectionLost(cause: Throwable?) {
             // 连接丢失
-            LogUtil.e("MQTT connection lost, $cause")
+            LogM.e("MQTT connection lost, $cause")
             // 自动重连，修改状态为连接中
             MqttManager.changeConnectStatus(MqttConnectStatus.CONNECTING)
         }
@@ -192,20 +194,20 @@ internal class MqttWorker : IMqtt {
             // 接收到的消息
             message ?: return
             topic ?: return
-            LogUtil.i("MQTT msg receive, topic=$topic, message=$message")
+            LogM.i("MQTT msg receive, topic=$topic, message=$message")
             MqttManager.receiveMessage(topic, message.toString())
         }
 
         override fun deliveryComplete(token: IMqttDeliveryToken?) {
             token ?: return
             // publish消息完成
-            LogUtil.i("MQTT push message success! id=${token.message.id}")
+            LogM.i("MQTT push message success! id=${token.message.id}")
             publishMessageResultScope.launch { publishMessageResultIdFlow.emit(token.message.id) }
         }
 
         override fun connectComplete(reconnect: Boolean, serverURI: String?) {
             // 连接完成
-            LogUtil.i("MQTT connected, isReconnect=$reconnect, serverURI=$serverURI")
+            LogM.i("MQTT connected, isReconnect=$reconnect, serverURI=$serverURI")
             MqttManager.changeConnectStatus(MqttConnectStatus.CONNECTED)
         }
     }
@@ -216,13 +218,13 @@ internal class MqttWorker : IMqtt {
     private val mConnectListener = object : IMqttActionListener {
         override fun onSuccess(asyncActionToken: IMqttToken?) {
             // 连接成功
-            LogUtil.i("MQTT connect success!")
+            LogM.i("MQTT connect success!")
             MqttManager.changeConnectStatus(MqttConnectStatus.CONNECTED)
         }
 
         override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
             // 连接失败
-            LogUtil.e("MQTT connect failed, $exception")
+            LogM.e("MQTT connect failed, $exception")
             MqttManager.changeConnectStatus(MqttConnectStatus.CONNECTING)
         }
     }
@@ -241,7 +243,7 @@ internal class MqttWorker : IMqtt {
                     object : IMqttActionListener {
                         override fun onSuccess(asyncActionToken: IMqttToken?) {
                             // 订阅成功
-                            LogUtil.i("MQTT subscribe topic success, topic=$topic")
+                            LogM.i("MQTT subscribe topic success, topic=$topic")
                         }
 
                         override fun onFailure(
@@ -250,11 +252,13 @@ internal class MqttWorker : IMqtt {
                         ) {
                             exception?.printStackTrace()
                             // 订阅失败
-                            LogUtil.e("MQTT subscribe topic failed, topic=$topic")
+                            LogM.e("MQTT subscribe topic failed, topic=$topic")
                         }
                     })
             } catch (e: Exception) {
                 e.printStackTrace()
+                // 订阅失败
+                LogM.e("MQTT subscribe topic failed, topic=$topic, $e")
             }
         }
     }

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.github.D10NGYANG"
-version = "0.0.7"
+version = "0.0.8"
 
 android {
     namespace = "com.d10ng.mqtt"
@@ -50,6 +50,9 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_ver")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_ver")
+
+    // 通用工具
+    implementation("com.github.D10NGYANG:DLCommonUtil:$dl_common_ver")
 }
 
 val bds100MavenUsername: String by project

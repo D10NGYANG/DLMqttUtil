@@ -4,6 +4,8 @@ android MQTT client，基于[paho.mqtt.android](https://github.com/eclipse/paho.
 
 *最新版本`0.0.8`*
 
+> 暂停维护，我改成使用 [KMQTT](https://github.com/davidepianca98/KMQTT) 来完成工作了
+
 # 特性
 - [x] 以Flow形式去接收订阅消息
 - [x] 以Flow形式展示连接状态
